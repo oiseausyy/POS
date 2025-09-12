@@ -1,611 +1,438 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>เกมเศรษฐีวงเหล้า — Board Drinking Game</title>
-<style>
-  :root{
-    --board-bg: #f7efe5;
-    --tile-bg: #fff9f0;
-    --accent: #8b5e3c;
-    --muted: #777;
-    --token-size: 28px;
-  }
-  body{
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial;
-    margin: 12px;
-    background: linear-gradient(180deg,#f0e9e0 0%, #efe6db 100%);
-    color:#2b2b2b;
-  }
-  header{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    margin-bottom:12px;
-  }
-  header h1{
-    margin:0;
-    font-size:20px;
-    color:var(--accent);
-  }
-  .controls{
-    display:flex;
-    gap:8px;
-    align-items:center;
-    margin-bottom:12px;
-    flex-wrap:wrap;
-  }
-  input[type="text"]{ padding:6px 8px; border-radius:6px; border:1px solid #d0c6bd; }
-  button{
-    background:var(--accent);
-    color:white;
-    border:0;
-    padding:8px 10px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:600;
-  }
-  button.secondary{ background:#d8c7b4; color:#3b2b21; }
-  .board-wrap{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
-  .board{
-    width:680px;
-    height:520px;
-    background:var(--board-bg);
-    border:8px solid #c9b79f;
-    border-radius:12px;
-    padding:12px;
-    box-sizing:border-box;
-    display:grid;
-    grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: repeat(7, 1fr);
-    gap:6px;
-  }
-  /* We'll place tiles using specific grid positions */
-  .tile{
-    background:var(--tile-bg);
-    border-radius:8px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
-    border:1px solid rgba(0,0,0,0.04);
-    padding:6px;
-    font-size:12px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    position:relative;
-    overflow:hidden;
-  }
-  .tile .title{ font-weight:700; color:var(--accent); font-size:12px; }
-  .tile .desc{ font-size:11px; color:var(--muted); margin-top:4px; }
-  /* tokens */
-  .token{
-    position:absolute;
-    width:var(--token-size);
-    height:var(--token-size);
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font-size:12px;
-    font-weight:700;
-    transform: translate(-10px, -10px);
-    box-shadow:0 2px 6px rgba(0,0,0,0.2);
-    border:2px solid rgba(255,255,255,0.6);
-  }
-  /* side panel */
-  .sidebar{
-    min-width:260px;
-    max-width:320px;
-    background:linear-gradient(180deg,#fffdf9,#f7f0e8);
-    padding:12px;
-    border-radius:12px;
-    border:1px solid #e2d8cc;
-    box-shadow:0 6px 20px rgba(0,0,0,0.06);
-  }
-  .players-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
-  .player{
-    display:flex;
-    gap:8px;
-    align-items:center;
-    justify-content:space-between;
-    padding:8px;
-    border-radius:8px;
-    background: #fff;
-    border:1px solid #efe7de;
-  }
-  .player .left{ display:flex; gap:8px; align-items:center; }
-  .player .dot{ width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;}
-  .status{ font-size:13px; color:var(--muted); }
-  .big-dice{
-    width:120px;
-    height:120px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:40px;
-    background:#fff;
-    border-radius:12px;
-    border:1px solid #e7ded2;
-    margin-bottom:12px;
-  }
-  .log{ height:130px; overflow:auto; border-radius:8px; padding:8px; background:#fff8f2; border:1px dashed #efdcc7; font-size:13px; }
-  footer{ margin-top:12px; font-size:13px; color:var(--muted); }
-  /* modal */
-  .modal{
-    position:fixed;
-    inset:0;
-    background: rgba(0,0,0,0.45);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:999;
-  }
-  .modal.open{ display:flex; }
-  .modal .card{
-    width:540px;
-    max-width:96%;
-    background:white;
-    padding:18px;
-    border-radius:12px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.4);
-  }
-  .muted-small{ font-size:12px; color:var(--muted); }
-  .small{ font-size:12px; }
-  .chip{ display:inline-block; padding:6px 8px; background:#f2e9e0; border-radius:999px; font-weight:700; color:var(--accent); margin-right:6px; }
-  .center{ text-align:center; }
-  @media (max-width:980px){
-    .board{ width:100%; height:420px; grid-template-columns: repeat(9,1fr); grid-template-rows: repeat(7, 1fr); }
-    .board-wrap{ flex-direction:column; align-items:stretch; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>วงแตก Card Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --surface-color: #2c2c2c;
+            --primary-color: #e74c3c;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --text-color: #ecf0f1;
+            --border-color: #444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--surface-color);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* --- Setup Screen --- */
+        #setup-screen h1 {
+            color: var(--primary-color);
+            font-weight: 900;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        #setup-screen p {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            color: #bdc3c7;
+        }
+
+        #player-inputs .player-input-group {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        #player-inputs input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            background-color: #333;
+            border-radius: 8px 0 0 8px;
+            font-family: 'Kanit', sans-serif;
+            color: var(--text-color);
+            font-size: 1em;
+        }
+
+        #player-inputs button {
+            padding: 0 15px;
+            border: 2px solid var(--border-color);
+            border-left: none;
+            background: #c0392b;
+            color: white;
+            cursor: pointer;
+            border-radius: 0 8px 8px 0;
+            font-size: 1.2em;
+        }
+
+        .action-buttons button {
+            padding: 12px 25px;
+            font-size: 1.2em;
+            font-family: 'Kanit', sans-serif;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        #add-player-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            margin-right: 10px;
+        }
+        
+        #start-game-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* --- Game Screen --- */
+        #game-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #player-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .player-tag {
+            background-color: #444;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .player-tag.active {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+        
+        #turn-indicator {
+             margin-bottom: 20px;
+             font-size: 1.3em;
+        }
+
+        #card-area {
+            width: 300px;
+            height: 420px;
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        
+        #card-display {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        #card-display.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .card-back {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            font-size: 3em;
+            font-weight: 900;
+        }
+        
+        .card-front {
+            background-color: #fff;
+            color: #333;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 20px;
+            border: 5px solid var(--border-color);
+        }
+
+        #card-title {
+            font-weight: 900;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        
+        #card-description {
+            font-size: 1.1em;
+        }
+        
+        /* Card Type Colors */
+        .card-front.type-action { border-color: #3498db; }
+        .card-front.type-changer { border-color: #2ecc71; }
+        .card-front.type-activity { border-color: #f1c40f; }
+        .card-front.type-duel { border-color: #9b59b6; }
+        
+        .game-button {
+            padding: 15px 40px;
+            font-size: 1.5em;
+            font-family: 'Kanit', sans-serif;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #draw-card-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        #next-turn-btn {
+            background-color: var(--success-color);
+            color: white;
+            display: none; /* Hidden by default */
+        }
+        
+        #rules-display {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        #rules-display h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        #rules-display ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        
+        #rules-display li {
+             margin-bottom: 5px;
+        }
+
+    </style>
 </head>
 <body>
-<header>
-  <h1>🎲 เกมเศรษฐีวงเหล้า (Board Drinking Game)</h1>
-  <div class="muted-small">เวอร์ชันเว็บ — เซฟไฟล์แล้วเปิดเล่นได้ทันที</div>
-</header>
 
-<div class="controls">
-  <label class="small">ชื่อผู้เล่น (คั่นด้วยเครื่องหมาย , )</label>
-  <input id="playerNames" type="text" placeholder="ตัวอย่าง: ตั้ม, มาร์ค, หมี" style="min-width:280px">
-  <button id="btnStart">Start Game</button>
-  <button id="btnReset" class="secondary">Reset</button>
-  <button id="btnRules" class="secondary">วิธีเล่น / หมายเหตุ</button>
-</div>
+    <div class="container">
+        <div id="setup-screen">
+            <h1>วงแตก</h1>
+            <p>เกมการ์ดวงเหล้า...ที่กฎอันตรายกว่าการ์ด!</p>
+            <div id="player-inputs">
+                <div class="player-input-group"><input type="text" placeholder="ชื่อผู้เล่น 1"></div>
+                <div class="player-input-group"><input type="text" placeholder="ชื่อผู้เล่น 2"></div>
+            </div>
+            <div class="action-buttons">
+                <button id="add-player-btn">เพิ่มผู้เล่น</button>
+                <button id="start-game-btn">เริ่มเกม!</button>
+            </div>
+        </div>
 
-<div class="board-wrap">
-  <div class="board" id="board" aria-label="game board">
-    <!-- Tiles - will be injected by JS -->
-  </div>
-
-  <aside class="sidebar">
-    <div class="center">
-      <div class="chip">ผู้เล่น</div>
+        <div id="game-screen">
+            <div id="player-list"></div>
+            <div id="turn-indicator"></div>
+            <div id="card-area">
+                <div id="card-display">
+                    <div class="card-face card-back">วงแตก</div>
+                    <div class="card-face card-front">
+                        <h2 id="card-title">ชื่อการ์ด</h2>
+                        <p id="card-description">คำอธิบาย</p>
+                    </div>
+                </div>
+            </div>
+            <button id="draw-card-btn" class="game-button">จั่วการ์ด!</button>
+            <button id="next-turn-btn" class="game-button">ตาถัดไป</button>
+            <div id="rules-display">
+                <h3>กฎเหล็ก (ผิดเมื่อไหร่ โดนทันที!)</h3>
+                <ul>
+                    <li>1. 💀 ห้ามจับหน้า หรือส่วนหัวทั้งหมด</li>
+                    <li>2. 💀 ห้ามเรียกชื่อเพื่อน (ใช้คำอื่นแทน)</li>
+                    <li>3. 💀 ห้ามพูดคำว่า "ดื่ม" หรือ "เมา"</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <div class="players-list" id="playersList">
-      <!-- player cards -->
-    </div>
+    <script>
+        const allCards = [
+            // Action Cards
+            { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
+            { name: "ชี้ชะตา", description: "คุณคือยมบาล! เลือกใครก็ได้ 1 คนมารับเคราะห์แทนคุณ", type: "action" },
+            { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
+            { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
+            { name: "น้ำตก", description: "คุณเริ่มยก คนถัดไปยกตามไปเรื่อยๆ ห้ามหยุดจนกว่าคนก่อนหน้าจะหยุด", type: "action" },
+            { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
+            { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
+            { name: "คนมีคู่ชู้ชื่น", description: "ใครที่มีแฟนแล้ว... โดน! (ข้อหาหมั่นไส้)", type: "action" },
 
-    <div class="center">
-      <div class="big-dice" id="diceDisplay">—</div>
-    </div>
+            // Game Changer Cards
+            { name: "ราชา", description: "คุณได้สิทธิ์ตั้งกฎใหม่ 1 ข้อ ทุกคนต้องทำตามจนกว่าจะถึงตาคุณอีกครั้ง ใครฝ่าฝืนโดน!", type: "changer" },
+            { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง (แต่ป้องกันกฎเหล็กไม่ได้นะ!)", type: "changer" },
+            { name: "นักปฏิวัติ", description: "ลำดับการเล่นจะย้อนกลับทิศทางทันที!", type: "changer" },
+            { name: "ข้ามตา", description: "โชคดีไป! ตานี้คุณรอด และคนถัดไปจะอดเล่นด้วย", type: "changer" },
 
-    <div style="display:flex; gap:8px; margin-bottom:8px;">
-      <button id="btnRoll">Roll Dice</button>
-      <button id="btnEnd" class="secondary">End Turn</button>
-      <button id="btnDraw" class="secondary">Draw Card</button>
-    </div>
+            // Activity Cards
+            { name: "Topic ร้อน", description: "ตั้งหัวข้อ 1 อย่าง (เช่น 'ยี่ห้อเบียร์') แล้วไล่ตอบทีละคน ใครตอบซ้ำหรือคิดไม่ออกใน 5 วิ... โดน!", type: "activity" },
+            { name: "นักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !", type: "activity" },
+            { name: "ตบโต๊ะ", description: "เมื่อการ์ดใบนี้เปิด ทุกคนต้องรีบตบโต๊ะ! ใครตบเป็นคนสุดท้าย... โดน!", type: "activity" },
+            { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "activity" },
+            
+            // Duel Cards
+            { name: "ศึกโอ-ส้ม", description: "เลือกคู่ต่อสู้ 1 คน มาเล่น 'โอ-ส้ม' กัน... ใครแพ้โดน!", type: "duel" },
+            { name: "ดวลหมดแก้ว", description: "ท้าใครก็ได้ 1 คน มาซดพร้อมกัน... ใครหมดช้ากว่า... โดนเบิ้ล!", type: "duel" },
+            { name: "เป่ายิงฉุบยมบาล", description: "ท้าใครก็ได้ 1 คน เป่ายิงฉุบ (ชนะ 2 ใน 3)... คนแพ้โดน 2 กรึ๊บ!", type: "duel" },
+            { name: "จ้องตาหาเรื่อง", description: "ท้าใครก็ได้ 1 คน มาจ้องตา... ใครหลบตาหรือขำก่อน... โดน!", type: "duel" },
+        ];
 
-    <div class="log" id="log"></div>
+        let players = [];
+        let deck = [];
+        let currentPlayerIndex = 0;
 
-    <div style="margin-top:10px;">
-      <div class="muted-small">ช็อตรวมของผู้เล่นจะแสดง ถ้าต้องการไม่ดื่ม ให้คลิกปุ่ม "ไม่ดื่ม" ในการแจ้งเหตุการณ์</div>
-    </div>
-  </aside>
-</div>
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const addPlayerBtn = document.getElementById('add-player-btn');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const playerInputsContainer = document.getElementById('player-inputs');
+        const playerListDiv = document.getElementById('player-list');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const cardDisplay = document.getElementById('card-display');
+        const drawCardBtn = document.getElementById('draw-card-btn');
+        const cardTitle = document.getElementById('card-title');
+        const cardDescription = document.getElementById('card-description');
+        const cardFront = document.querySelector('.card-front');
+        
+        // **** START: JAVASCRIPT CHANGE ****
+        const nextTurnBtn = document.getElementById('next-turn-btn');
+        // **** END: JAVASCRIPT CHANGE ****
 
-<footer>
-  เล่นอย่างรับผิดชอบ • สามารถแทนช็อตด้วย "งานท้า" ได้ตามตกลงในวง
-</footer>
+        // --- SETUP LOGIC ---
+        addPlayerBtn.addEventListener('click', () => {
+            if (playerInputsContainer.children.length >= 8) return;
+            const newPlayerInput = document.createElement('div');
+            newPlayerInput.className = 'player-input-group';
+            newPlayerInput.innerHTML = `<input type="text" placeholder="ชื่อผู้เล่น ${playerInputsContainer.children.length + 1}"><button onclick="this.parentElement.remove()">-</button>`;
+            playerInputsContainer.appendChild(newPlayerInput);
+        });
 
-<!-- Modal -->
-<div class="modal" id="modal">
-  <div class="card" id="modalCard">
-    <div id="modalTitle" style="font-weight:800; font-size:18px;"></div>
-    <p id="modalText" style="margin-top:8px;"></p>
-    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
-      <button id="modalConfirm">โอเค (ยอมดื่ม)</button>
-      <button id="modalSkip" class="secondary">ไม่ดื่ม / ข้าม</button>
-    </div>
-  </div>
-</div>
+        startGameBtn.addEventListener('click', () => {
+            players = Array.from(document.querySelectorAll('#player-inputs input'))
+                .map(input => input.value.trim())
+                .filter(name => name);
 
-<script>
-/*
-  Game data & logic
-*/
-const PLAYER_COLORS = ['#e74c3c','#3498db','#f39c12','#8e44ad','#27ae60','#d35400'];
-const TILE_COUNT = 30;
+            if (players.length < 2) {
+                alert('ต้องมีผู้เล่นอย่างน้อย 2 คนนะ!');
+                return;
+            }
 
-// preset tiles (30) - type: drink (n shots), event (instructions), safe
-const TILES = [
-  {title:'Start', desc:'เริ่มเกม — ชนแก้วถ้าครบหนึ่งรอบ', type:'safe'},
-  {title:'ดื่ม 1', desc:'ดื่ม 1 ช็อต', type:'drink', value:1},
-  {title:'กล้า-ไม่กล้า', desc:'เพื่อนถาม คุณตอบหรือดื่ม 2', type:'dare', value:2},
-  {title:'สลับที่', desc:'สลับที่นั่งกับคนที่เลือก', type:'event'},
-  {title:'การ์ด', desc:'หยิบการ์ดภารกิจ', type:'card'},
-  {title:'ดื่ม 2', desc:'ดื่ม 2 ช็อต', type:'drink', value:2},
-  {title:'พัก', desc:'ไม่ต้องดื่มช่องนี้', type:'safe'},
-  {title:'คิง', desc:'คุณเป็นคิง 1 รอบ (สามารถสั่งใครดื่ม 1 ช็อต)', type:'king'},
-  {title:'ถอย 2', desc:'ถอยหลัง 2 ช่อง', type:'move', value:-2},
-  {title:'เล่าเรื่องอาย', desc:'เล่า ถ้าไม่เล่าดื่ม 1', type:'dare', value:1},
+            setupScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            initGame();
+        });
+        
+        // --- GAME LOGIC ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function initGame() {
+            deck = [...allCards];
+            shuffle(deck);
+            currentPlayerIndex = Math.floor(Math.random() * players.length);
+            updatePlayerList();
+            updateTurnUI();
+        }
 
-  {title:'ดื่ม 1', desc:'ดื่ม 1 ช็อต', type:'drink', value:1},
-  {title:'ร้องเพลง', desc:'ร้องท่อนฮิต ถ้าเพี้ยน ดื่ม 1', type:'dare', value:1},
-  {title:'การ์ด', desc:'หยิบการ์ดภารกิจ', type:'card'},
-  {title:'สลับช็อต', desc:'ส่งช็อต 1 ให้คนข้างซ้าย', type:'transfer', value:1},
-  {title:'ดื่ม 3', desc:'ดื่ม 3 ช็อต', type:'drink', value:3},
-  {title:'พัก', desc:'พัก (ไม่ต้องดื่ม)', type:'safe'},
-  {title:'ทอยซ้ำ', desc:'ทอยลูกเต๋าอีกครั้ง', type:'roll_again'},
-  {title:'แจกโจทย์', desc:'ตั้งคำถามกล้า-ไม่กล้า  ถ้าไม่ตอบ ดื่ม 2', type:'dare', value:2},
-  {title:'ถอย 3', desc:'ถอยหลัง 3 ช่อง', type:'move', value:-3},
-  {title:'การ์ด', desc:'หยิบการ์ดภารกิจ', type:'card'},
+        // **** START: JAVASCRIPT LOGIC CHANGE ****
+        drawCardBtn.addEventListener('click', () => {
+            if (deck.length === 0) {
+                alert('การ์ดหมดสำรับ! กำลังสับใหม่...');
+                deck = [...allCards];
+                shuffle(deck);
+            }
 
-  {title:'Double', desc:'ทอยได้คู่ ดื่ม 2 ถ้าได้คี่ แจก 2', type:'dice_event'},
-  {title:'ดื่ม 1', desc:'ดื่ม 1 ช็อต', type:'drink', value:1},
-  {title:'คิง', desc:'คิง (สั่งใคร 1 ช็อต)', type:'king'},
-  {title:'สลับที่', desc:'สลับที่กับใครก็ได้', type:'event'},
-  {title:'การ์ด', desc:'หยิบการ์ดภารกิจ', type:'card'},
-  {title:'ร้องเป๊ก', desc:'เล่นเป๊ก หากแพ้ ดื่ม 1', type:'mini_game'},
-  {title:'พัก', desc:'พัก (ไม่ต้องดื่ม)', type:'safe'},
-  {title:'ดื่ม 2', desc:'ดื่ม 2 ช็อต', type:'drink', value:2},
-  {title:'Finish', desc:'ครบ 1 รอบ — ชนแก้วกับทุกคน 1 ช็อต', type:'finish'}
-];
+            const card = deck.pop();
+            
+            drawCardBtn.style.display = 'none'; // Hide draw button
+            nextTurnBtn.style.display = 'inline-block'; // Show next turn button
+            
+            cardDisplay.classList.add('flipped');
 
-// sample cards deck
-const CARDS = [
-  {title:'แจกช็อตรวม', text:'ให้ทุกคนในวงดื่มพร้อมกัน 1 ช็อต', action: (g, idx)=> { g.players.forEach(p=>p.shots += 1); return `${g.currentPlayer().name} เปิดการ์ด: ทุกคนดื่ม 1 ช็อต`; }},
-  {title:'ช็อตโชคร้าย', text:'ส่งช็อต 2 ให้คนข้างซ้าย', action: (g, idx)=> { let i=(idx+1)%g.players.length; g.players[i].shots += 2; return `${g.currentPlayer().name} ส่งช็อต 2 ให้ ${g.players[i].name}`; }},
-  {title:'พูดสำเนียง', text:'พูดด้วยสำเนียงที่ถูกกำหนดจนกว่าจะถึงตาถัดไป', action: (g, idx)=> { return `${g.currentPlayer().name} ต้องพูดด้วยสำเนียงพิเศษจนกว่าจะถึงครั้งต่อไป`; }},
-  {title:'เกมเป่ายิ้งฉุบ', text:'ชนะ → แจก 2 ช็อตให้คนอื่น หรือแพ้ → ดื่ม 2', action: (g, idx)=> { return `${g.currentPlayer().name} หยิบการ์ด: เล่นเป่ายิ้งฉุบกับคนเดียว คนแพ้ดื่ม 2`; }},
-  {title:'งานท้า', text:'ตั้งท้าให้ทำงาน 1 อย่าง (แทนดื่ม)', action: (g, idx)=> { return `${g.currentPlayer().name} ต้องเลือกทำงานท้า 1 อย่าง แทนการดื่ม`; }},
-  {title:'โชคดี', text:'คุณได้รับโล่ — เลือกคนให้ดื่ม 1', action: (g, idx)=> { return `${g.currentPlayer().name} ได้สิทธิ์สั่งให้คนหนึ่งดื่ม 1 ช็อต`; }},
-  {title:'บูสต์', text:'ลดช็อตตัวเอง 1 (ยกเว้นถ้าน้อยกว่า 1)', action: (g, idx)=> { if(g.currentPlayer().shots>0) g.currentPlayer().shots -= 1; return `${g.currentPlayer().name} ใช้บูสต์ ลดช็อตตัวเอง 1`; }}
-];
+            setTimeout(() => {
+                cardTitle.textContent = card.name;
+                cardDescription.textContent = card.description;
+                cardFront.className = 'card-face card-front'; // Reset classes
+                cardFront.classList.add(`type-${card.type}`);
+            }, 300); // Update content mid-flip
+        });
 
-// game state
-let game = {
-  players: [],
-  turnIndex: 0,
-  dice: 1,
-  isStarted: false,
-  deck: [],
-  logs: [],
-  positions: [], // index in tiles
-  pendingRoll: false,
-  kingIndex: null
-};
+        nextTurnBtn.addEventListener('click', () => {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateTurnUI();
+            
+            cardDisplay.classList.remove('flipped');
+            
+            nextTurnBtn.style.display = 'none'; // Hide next turn button
+            drawCardBtn.style.display = 'inline-block'; // Show draw button
+        });
+        // **** END: JAVASCRIPT LOGIC CHANGE ****
 
-// helpers
-function $(id){ return document.getElementById(id); }
-function log(msg){
-  game.logs.unshift(`${new Date().toLocaleTimeString()} — ${msg}`);
-  updateLog();
-}
-function updateLog(){
-  const el = $('log');
-  el.innerHTML = game.logs.slice(0,200).map(l=>`<div>${l}</div>`).join('');
-}
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
-  }
-  return arr;
-}
-function startGameFromNames(names){
-  const nlist = names.split(',').map(s=>s.trim()).filter(Boolean).slice(0,6);
-  if(nlist.length < 2){ alert('ต้องมีผู้เล่นอย่างน้อย 2 คน'); return; }
-  game.players = nlist.map((name,i)=>({name, color:PLAYER_COLORS[i%PLAYER_COLORS.length], shots:0, rounds:0}));
-  game.turnIndex = 0;
-  game.positions = new Array(game.players.length).fill(0);
-  game.deck = shuffle([...CARDS]);
-  game.logs = [];
-  game.isStarted = true;
-  game.kingIndex = null;
-  updateAll();
-  renderBoard();
-  log(`เกมเริ่ม: ผู้เล่น ${nlist.join(' / ')}`);
-}
-function resetGame(){
-  game = {
-    players: [],
-    turnIndex: 0,
-    dice: 1,
-    isStarted: false,
-    deck: [],
-    logs: [],
-    positions: [],
-    pendingRoll:false,
-    kingIndex:null
-  };
-  $('playerNames').value = '';
-  renderBoard();
-  updateAll();
-}
+        function updatePlayerList() {
+            playerListDiv.innerHTML = '';
+            players.forEach((name, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'player-tag';
+                tag.id = `player-tag-${index}`;
+                tag.textContent = name;
+                playerListDiv.appendChild(tag);
+            });
+        }
+        
+        function updateTurnUI() {
+            turnIndicator.textContent = `ตาของ... ${players[currentPlayerIndex]}`;
+            document.querySelectorAll('.player-tag').forEach(tag => tag.classList.remove('active'));
+            document.getElementById(`player-tag-${currentPlayerIndex}`).classList.add('active');
+        }
 
-/* UI rendering */
-function renderBoard(){
-  const b = $('board');
-  b.innerHTML = '';
-  // We'll place tiles roughly around edges (simple layout)
-  // For simplicity we create a 11x7 grid and place tiles in sequence around border-ish
-  // But easier: render tiles left-to-right top-to-bottom; show index
-  for(let i=0;i<TILE_COUNT;i++){
-    const t = TILES[i] || {title:`T${i}`, desc:'', type:'safe'};
-    const div = document.createElement('div');
-    div.className = 'tile';
-    div.dataset.index = i;
-    div.innerHTML = `<div>
-      <div class="title">${i+1}. ${t.title}</div>
-      <div class="desc">${t.desc}</div>
-    </div>
-    <div style="text-align:right; font-size:11px; color:var(--muted)">${t.type==='drink' && t.value? t.value+' ช็อต':''}</div>`;
-    b.appendChild(div);
-  }
-  // render tokens on top
-  placeAllTokens();
-}
-
-function placeAllTokens(){
-  // remove old tokens
-  document.querySelectorAll('.token').forEach(e=>e.remove());
-  game.players.forEach((p, pi)=>{
-    const pos = game.positions[pi] ?? 0;
-    const tileEl = document.querySelector(`.tile[data-index="${pos}"]`);
-    if(!tileEl) return;
-    const token = document.createElement('div');
-    token.className = 'token';
-    token.style.left = '10px';
-    token.style.top = `${10 + pi*18}px`;
-    token.style.background = p.color;
-    token.textContent = (pi+1);
-    token.title = p.name;
-    tileEl.appendChild(token);
-  });
-}
-
-function updatePlayersList(){
-  const box = $('playersList');
-  box.innerHTML = '';
-  game.players.forEach((p, i)=>{
-    const el = document.createElement('div');
-    el.className = 'player';
-    el.innerHTML = `<div class="left">
-      <div class="dot" style="background:${p.color}">${i+1}</div>
-      <div>
-        <div style="font-weight:700">${p.name}</div>
-        <div class="status">ช็อต: <strong id="shots-${i}">${p.shots}</strong></div>
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div style="font-size:12px;color:var(--muted)">รอบ: ${p.rounds}</div>
-      <div style="margin-top:6px;">${i===game.turnIndex ? '<div style="color:var(--accent); font-weight:800">→ ตาถัดไป</div>' : ''}</div>
-    </div>`;
-    box.appendChild(el);
-  });
-}
-
-function updateDiceDisplay(val){
-  $('diceDisplay').textContent = val === null ? '—' : val;
-}
-
-function updateAll(){
-  updatePlayersList();
-  updateDiceDisplay(null);
-  updateLog();
-  placeAllTokens();
-}
-
-/* Game mechanics */
-function currentPlayerIndex(){ return game.turnIndex; }
-function currentPlayer(){ return game.players[game.turnIndex]; }
-
-function rollDice(){
-  if(!game.isStarted) { alert('เริ่มเกมก่อน'); return; }
-  const val = Math.floor(Math.random()*6) + 1;
-  game.dice = val;
-  updateDiceDisplay(val);
-  log(`${currentPlayer().name} ทอยได้ ${val}`);
-  // move player
-  movePlayer(game.turnIndex, val);
-  game.pendingRoll = true;
-  // handle tile after slight delay
-  setTimeout(()=> handleTile(game.turnIndex), 400);
-  return val;
-}
-
-function movePlayer(playerIndex, steps){
-  let pos = game.positions[playerIndex] ?? 0;
-  pos = (pos + steps);
-  // if pass finish (>TILE_COUNT-1) count as round complete
-  if(pos >= TILE_COUNT){
-    // completed a round
-    pos = pos % TILE_COUNT;
-    game.players[playerIndex].rounds += 1;
-    // finish effect: everyone drinks 1
-    log(`${game.players[playerIndex].name} ครบ 1 รอบ — ชนแก้วกับทุกคน 1 ช็อต`);
-    game.players.forEach(p=>p.shots += 1);
-  }
-  game.positions[playerIndex] = pos;
-  placeAllTokens();
-}
-
-function handleTile(playerIndex){
-  const pos = game.positions[playerIndex];
-  const tile = TILES[pos] || {type:'safe'};
-  const player = game.players[playerIndex];
-
-  switch(tile.type){
-    case 'drink':
-      showModal({
-        title:`${player.name} ตกช่อง: ${tile.title}`,
-        text: `${tile.desc}\n(ดื่ม ${tile.value} ช็อต)`,
-        onConfirm: ()=> { player.shots += tile.value; log(`${player.name} ดื่ม ${tile.value} ช็อต`); closeModal(); updateAll(); },
-        onSkip: ()=> { log(`${player.name} ข้ามการดื่มในช่องนี้`); closeModal(); }
-      });
-      break;
-
-    case 'card':
-      drawCard(playerIndex);
-      break;
-
-    case 'dare':
-      showModal({
-        title:`${player.name} ตกช่อง: ${tile.title}`,
-        text: `${tile.desc}\n(ถ้าไม่ทำ ดื่ม ${tile.value} ช็อต)`,
-        onConfirm: ()=> { log(`${player.name} ยอม: ดื่ม ${tile.value}`); player.shots += tile.value; closeModal(); updateAll(); },
-        onSkip: ()=> { log(`${player.name} เลือกไม่ทำ — ดื่ม ${tile.value}`); player.shots += tile.value; closeModal(); updateAll(); }
-      });
-      break;
-
-    case 'king':
-      game.kingIndex = playerIndex;
-      log(`${player.name} ได้เป็นคิง! สามารถสั่งใครให้ดื่ม 1 ช็อตในรอบนี้`);
-      alert(`${player.name} เป็นคิง! คุณสามารถสั่งใครให้ดื่ม 1 ช็อต โดยกดที่ปุ่ม Draw Card -> 'คิง' (หรือสั่งด้วยปาก)`); // quick
-      break;
-
-    case 'move':
-      const steps = tile.value;
-      movePlayer(playerIndex, steps);
-      log(`${player.name} ถูกบังคับเคลื่อนที่ ${steps} ช่อง`);
-      updateAll();
-      break;
-
-    case 'roll_again':
-      log(`${player.name} หยุดที่ทอยซ้ำ — ทอยอีกครั้งได้ทันที`);
-      // allow immediate reroll (do not end turn)
-      break;
-
-    case 'dice_event':
-      // special dice logic
-      const d = game.dice;
-      if(d%2===0) { player.shots += 2; log(`${player.name} ได้เลขคู่ — ดื่ม 2`); }
-      else { // give 2 to others
-        game.players.forEach((p, i)=> { if(i!==playerIndex) p.shots += 1; });
-        log(`${player.name} ได้เลขคี่ — ทุกคนอื่นได้ 1 ช็อต`);
-      }
-      updateAll();
-      break;
-
-    case 'event':
-      log(`${player.name} ตกช่อง event: ${tile.desc}`);
-      break;
-
-    case 'safe':
-    default:
-      log(`${player.name} ตกช่องปลอดภัย`);
-      break;
-  }
-}
-
-/* Cards */
-function drawCard(playerIndex){
-  if(game.deck.length === 0){
-    game.deck = shuffle([...CARDS]);
-    log('สับการ์ดใหม่');
-  }
-  const c = game.deck.pop();
-  log(`${game.players[playerIndex].name} หยิบการ์ด: ${c.title}`);
-  // show modal with action
-  showModal({
-    title: `การ์ด: ${c.title}`,
-    text: c.text,
-    onConfirm: ()=> { 
-      const res = c.action(game, playerIndex);
-      if(res) log(res);
-      updateAll();
-      closeModal();
-    },
-    onSkip: ()=> { log(`${game.players[playerIndex].name} เลือกไม่ทำการ์ดนี้`); closeModal(); }
-  });
-}
-
-/* modal helpers */
-function showModal({title, text, onConfirm, onSkip}){
-  const m = $('modal');
-  $('modalTitle').textContent = title;
-  $('modalText').textContent = text;
-  m.classList.add('open');
-  // attach handlers
-  const ok = $('modalConfirm');
-  const sk = $('modalSkip');
-  ok.onclick = ()=> { if(onConfirm) onConfirm(); };
-  sk.onclick = ()=> { if(onSkip) onSkip(); };
-}
-
-function closeModal(){
-  const m = $('modal');
-  m.classList.remove('open');
-}
-
-/* turn handling */
-function endTurn(){
-  if(!game.isStarted) return;
-  // if king was set earlier, clear it at end of turn
-  if(game.kingIndex === game.turnIndex){
-    game.kingIndex = null;
-  }
-  // advance
-  game.turnIndex = (game.turnIndex + 1) % game.players.length;
-  updateAll();
-  log(`ถึงตา ${currentPlayer().name}`);
-}
-
-/* small UI & events */
-document.getElementById('btnStart').addEventListener('click', ()=>{
-  const names = $('playerNames').value || '';
-  startGameFromNames(names);
-});
-
-document.getElementById('btnReset').addEventListener('click', ()=>{
-  if(confirm('รีเซ็ตเกมทั้งหมด?')) resetGame();
-});
-
-document.getElementById('btnRoll').addEventListener('click', ()=>{
-  if(!game.isStarted) { alert('เริ่มเกมก่อน'); return; }
-  rollDice();
-  updateAll();
-});
-
-document.getElementById('btnEnd').addEventListener('click', ()=>{
-  if(!game.isStarted) return;
-  endTurn();
-});
-
-document.getElementById('btnDraw').addEventListener('click', ()=>{
-  if(!game.isStarted) { alert('เริ่มเกมก่อน'); return; }
-  drawCard(game.turnIndex);
-  updateAll();
-});
-
-document.getElementById('btnRules').addEventListener('click', ()=>{
-  alert(
-`กฎสั้น ๆ:
-- ตั้งชื่อผู้เล่น 2-6 คน แล้วกด Start
-- ทอยลูกเต๋า (Roll) แล้วเดินตามจำนวน
-- ตกช่องไหนให้ทำตามคำสั่ง ถ้าต้องดื่ม ให้กดยืนยันในกล่อง
-- End Turn เพื่อย้ายตาไปคนถัดไป
-- ใครครบ 1 รอบ (กลับมาที่ Start) จะให้ทุกคนดื่ม 1 ช็อต
-Tip: ปรับกติกาช็อตตามวง (แทนช็อตด้วยงานท้าได้) — เล่นอย่างรับผิดชอบ!`
-  );
-});
-
-/* init */
-renderBoard();
-updateAll();
-</script>
+    </script>
 </body>
 </html>
