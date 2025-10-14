@@ -3,253 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibes Card Game</title>
+    <title>Vibes Card Game - Advanced Tactics!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* --- THEME AND COLOR VARIABLES --- */
         :root {
-            --bg-color: #1a1a1a;
-            --surface-color: #2c2c2c;
-            --primary-color: #e74c3c;
-            --secondary-color: #3498db;
-            --success-color: #27ae60;
-            --text-color: #ecf0f1;
-            --border-color: #444;
+            --transition-speed: 0.3s;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        body.theme-dark {
+            --bg-color: #1a1a1a; --surface-color: #2c2c2c; --primary-color: #e74c3c; --secondary-color: #3498db; --success-color: #27ae60; --text-color: #ecf0f1; --border-color: #444; --shadow-color: rgba(0, 0, 0, 0.5); --curse-color: #9b59b6; --keeper-color: #f1c40f;
         }
 
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        body.theme-light {
+            --bg-color: #f0f2f5; --surface-color: #ffffff; --primary-color: #e74c3c; --secondary-color: #3498db; --success-color: #27ae60; --text-color: #333333; --border-color: #ddd; --shadow-color: rgba(0, 0, 0, 0.15); --curse-color: #9b59b6; --keeper-color: #f1c40f;
         }
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--surface-color);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-
-        /* --- Setup Screen --- */
-        #setup-screen h1 {
-            color: var(--primary-color);
-            font-weight: 900;
-            font-size: 3em;
-            margin-bottom: 10px;
+        body.theme-neon {
+            --bg-color: #0d0221; --surface-color: #140c2e; --primary-color: #f900ff; --secondary-color: #00f5ff; --success-color: #00ff85; --text-color: #f0f0f0; --border-color: #9b59b6; --shadow-color: rgba(0, 0, 0, 0.7); --curse-color: #ff00ff; --keeper-color: #f1c40f;
         }
         
-        #setup-screen p {
-            margin-bottom: 25px;
-            font-size: 1.1em;
-            color: #bdc3c7;
-        }
+        /* --- GENERAL STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Kanit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; transition: background-color var(--transition-speed); background-color: var(--bg-color); color: var(--text-color); }
+        .container { width: 100%; max-width: 500px; background: var(--surface-color); padding: 25px; border-radius: 20px; box-shadow: 0 10px 40px var(--shadow-color); text-align: center; border: 1px solid var(--border-color); transition: background-color var(--transition-speed), border-color var(--transition-speed); }
+        .game-button { padding: 12px 25px; font-size: 1.2em; font-family: 'Kanit', sans-serif; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; margin: 5px; }
 
-        #player-inputs .player-input-group {
-            display: flex;
-            margin-bottom: 12px;
-        }
+        /* --- SETUP SCREEN --- */
+        #setup-screen h1 { color: var(--primary-color); font-weight: 900; font-size: 3em; margin-bottom: 10px; }
+        #setup-screen p { margin-bottom: 25px; font-size: 1.1em; color: #bdc3c7; }
+        body.theme-light #setup-screen p { color: #888; }
+        #player-inputs .player-input-group { display: flex; margin-bottom: 12px; }
+        #player-inputs input { flex-grow: 1; padding: 12px; border: 2px solid var(--border-color); background-color: var(--bg-color); border-radius: 8px 0 0 8px; font-family: 'Kanit', sans-serif; color: var(--text-color); font-size: 1em; transition: all var(--transition-speed); }
+        #player-inputs button { padding: 0 15px; border: 2px solid var(--border-color); border-left: none; background: #c0392b; color: white; cursor: pointer; border-radius: 0 8px 8px 0; font-size: 1.2em; }
+        #add-player-btn { background-color: var(--secondary-color); color: white; }
+        #start-game-btn { background-color: var(--success-color); color: white; }
 
-        #player-inputs input {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            background-color: #333;
-            border-radius: 8px 0 0 8px;
-            font-family: 'Kanit', sans-serif;
-            color: var(--text-color);
-            font-size: 1em;
-        }
-
-        #player-inputs button {
-            padding: 0 15px;
-            border: 2px solid var(--border-color);
-            border-left: none;
-            background: #c0392b;
-            color: white;
-            cursor: pointer;
-            border-radius: 0 8px 8px 0;
-            font-size: 1.2em;
-        }
-
-        .action-buttons button {
-            padding: 12px 25px;
-            font-size: 1.2em;
-            font-family: 'Kanit', sans-serif;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 10px;
-        }
-
-        #add-player-btn {
-            background-color: var(--secondary-color);
-            color: white;
-            margin-right: 10px;
-        }
+        /* --- GAME SCREEN --- */
+        #game-screen { display: none; flex-direction: column; align-items: center; }
         
-        #start-game-btn {
-            background-color: var(--success-color);
-            color: white;
-        }
+        /* Player List & Statuses (Curse Icon) */
+        #player-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .player-tag { background-color: var(--border-color); padding: 5px 15px; border-radius: 20px; transition: all 0.3s ease; position: relative; }
+        .player-tag.active { background-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-color); }
+        .curse-icon { position: absolute; top: -8px; right: -5px; font-size: 1.2em; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-        /* --- Game Screen --- */
-        #game-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #player-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .player-tag {
-            background-color: #444;
-            padding: 5px 15px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .player-tag.active {
-            background-color: var(--primary-color);
-            transform: scale(1.1);
-            box-shadow: 0 0 15px var(--primary-color);
-        }
-        
-        #turn-indicator {
-             margin-bottom: 20px;
-             font-size: 1.3em;
-        }
-
-        #card-area {
-            width: 300px;
-            height: 420px;
-            perspective: 1000px;
-            margin-bottom: 20px;
-        }
-        
-        #card-display {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
-        
-        #card-display.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        
-        .card-back {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            font-size: 3em;
-            font-weight: 900;
-        }
-        
-        .card-front {
-            background-color: #fff;
-            color: #333;
-            transform: rotateY(180deg);
-            flex-direction: column;
-            padding: 20px;
-            border: 5px solid var(--border-color);
-        }
-
-        #card-title {
-            font-weight: 900;
-            font-size: 1.8em;
-            margin-bottom: 15px;
-        }
-        
-        #card-description {
-            font-size: 1.1em;
-        }
+        /* Card Area & Animations */
+        #card-area { width: 300px; height: 420px; perspective: 1000px; margin-bottom: 15px; }
+        #card-area.drawing { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px) rotate(-1deg); } 75% { transform: translateX(5px) rotate(1deg); } }
+        #card-display { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+        #card-display.flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 15px var(--shadow-color); }
+        .card-back { background: linear-gradient(45deg, var(--primary-color), #c0392b); font-size: 3em; font-weight: 900; }
+        .card-front { background-color: var(--surface-color); color: var(--text-color); transform: rotateY(180deg); flex-direction: column; padding: 20px; border: 5px solid var(--border-color); }
+        .card-front.special-card-glow { animation: glow 1.5s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px #fff, 0 0 20px var(--special-glow-color), 0 0 30px var(--special-glow-color); } to { box-shadow: 0 0 20px #fff, 0 0 30px var(--special-glow-color), 0 0 40px var(--special-glow-color); } }
+        #card-title { font-weight: 900; font-size: 1.8em; margin-bottom: 15px; }
+        #card-description { font-size: 1.1em; }
         
         /* Card Type Colors */
         .card-front.type-action { border-color: #3498db; }
-        .card-front.type-changer { border-color: #2ecc71; }
+        .card-front.type-changer { border-color: #2ecc71; --special-glow-color: #2ecc71; }
         .card-front.type-activity { border-color: #f1c40f; }
         .card-front.type-duel { border-color: #9b59b6; }
+        .card-front.type-keeper { border-color: var(--keeper-color); --special-glow-color: var(--keeper-color); }
+        .card-front.type-curse { border-color: var(--curse-color); --special-glow-color: var(--curse-color); }
         
-        .game-button {
-            padding: 15px 40px;
-            font-size: 1.5em;
-            font-family: 'Kanit', sans-serif;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        /* Game Buttons & UI */
+        #game-buttons { min-height: 60px; /* Reserve space */ }
+        #draw-card-btn { background-color: var(--primary-color); color: white; }
+        #next-turn-btn { background-color: var(--success-color); color: white; display: none; }
+        #keep-card-btn { background-color: var(--keeper-color); color: #333; display: none; }
+        .choice-btn { background-color: var(--secondary-color); color: white; }
+        
+        /* Player Inventory (Keeper Card) */
+        #player-inventory { margin-top: 15px; min-height: 50px; }
+        #player-inventory h3 { font-size: 1em; margin-bottom: 5px; color: var(--keeper-color); }
+        .inventory-card { display: inline-block; padding: 8px 15px; background-color: var(--keeper-color); color: #111; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        
+        /* Target Selection Modal (For Curses) */
+        #target-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+        #target-modal-content { background: var(--surface-color); padding: 30px; border-radius: 15px; text-align: center; }
+        #target-modal-content h3 { margin-bottom: 20px; color: var(--curse-color); }
+        #target-players { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .target-player-btn { background-color: var(--primary-color); color: white; }
 
-        #draw-card-btn {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        #next-turn-btn {
-            background-color: var(--success-color);
-            color: white;
-            display: none; /* Hidden by default */
-        }
-        
-        #rules-display {
-            margin-top: 25px;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-        }
-        
-        #rules-display h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-        
-        #rules-display ul {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-        
-        #rules-display li {
-             margin-bottom: 5px;
-        }
-
+        /* Theme Switcher */
+        #theme-switcher { position: absolute; top: 15px; right: 15px; }
+        .theme-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer; margin-left: 5px; display: inline-block; }
+        #theme-dark { background-color: #1a1a1a; }
+        #theme-light { background-color: #f0f2f5; }
+        #theme-neon { background: linear-gradient(45deg, #f900ff, #00f5ff); }
     </style>
 </head>
-<body>
+<body class="theme-dark">
+
+    <div id="theme-switcher">
+        <span class="theme-btn" id="theme-dark" onclick="switchTheme('theme-dark')"></span>
+        <span class="theme-btn" id="theme-light" onclick="switchTheme('theme-light')"></span>
+        <span class="theme-btn" id="theme-neon" onclick="switchTheme('theme-neon')"></span>
+    </div>
+
+    <div id="target-modal">
+        <div id="target-modal-content">
+            <h3>เลือกเป้าหมายที่จะร่ายคำสาป...</h3>
+            <div id="target-players"></div>
+        </div>
+    </div>
 
     <div class="container">
         <div id="setup-screen">
@@ -260,8 +124,8 @@
                 <div class="player-input-group"><input type="text" placeholder="ชื่อผู้เล่น 2"></div>
             </div>
             <div class="action-buttons">
-                <button id="add-player-btn">เพิ่มผู้เล่น</button>
-                <button id="start-game-btn">เริ่มเกม!</button>
+                <button class="game-button" id="add-player-btn">เพิ่มผู้เล่น</button>
+                <button class="game-button" id="start-game-btn">เริ่มเกม!</button>
             </div>
         </div>
 
@@ -277,197 +141,376 @@
                     </div>
                 </div>
             </div>
-            <button id="draw-card-btn" class="game-button">จั่วการ์ด!</button>
-            <button id="next-turn-btn" class="game-button">ตาถัดไป</button>
-            <div id="rules-display">
-                <h3>กฎเหล็ก (ผิดเมื่อไหร่ โดนทันที!)</h3>
-                <ul>
-                    <li>1. 💀 ห้ามจับหน้า หรือส่วนหัวทั้งหมด</li>
-                    <li>2. 💀 ห้ามใช้นิ้วชี้ (แบมือได้แต่ห้ามใช้นิ้วชี้)</li>
-                    <li>3. 💀 ห้ามพูดคำว่า "เมา"</li>
-                </ul>
+            <div id="game-buttons">
+                <button id="draw-card-btn" class="game-button">จั่วการ์ด!</button>
+                <button id="keep-card-btn" class="game-button">เก็บการ์ด</button>
+                <div id="choice-buttons"></div>
+                <button id="next-turn-btn" class="game-button">ตาถัดไป</button>
             </div>
+            <div id="player-inventory"></div>
         </div>
     </div>
 
     <script>
-        const allCards = [
-            // Action Cards
-            { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
-            { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
-            { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
-            { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
-            { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
-            { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
-            { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
-            { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
-            { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
-            { name: "ชี้ชะตา", description: "คุณคือยมบาล! เลือกใครก็ได้ 1 คนมารับเคราะห์แทนคุณ", type: "action" },
-            { name: "ชี้ชะตา", description: "คุณคือยมบาล! เลือกใครก็ได้ 1 คนมารับเคราะห์แทนคุณ", type: "action" },
-            { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
-            { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
-            { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
-            { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
-            { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" }, 
-            { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
-            { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
-            { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
-            { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
-            { name: "น้ำตก", description: "คุณเริ่มยก คนถัดไปยกตามไปเรื่อยๆ ห้ามหยุดจนกว่าคนก่อนหน้าจะหยุด", type: "action" },
-            { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
-            { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
-            { name: "คนมีคู่ชู้ชื่น", description: "ใครที่มีแฟนแล้ว... โดน! (ข้อหาหมั่นไส้)", type: "action" },
-
-            // Game Changer Cards
-            { name: "ราชา", description: "คุณได้สิทธิ์สั่งอะไรก็ได้ 1 ข้อ ทุกคนหรือใครที่ถูกสั่งต้องทำตาม ห้ามฝ่าฝืน!", type: "changer" },
-            { name: "ราชา", description: "คุณได้สิทธิ์สั่งอะไรก็ได้ 1 ข้อ ทุกคนหรือใครที่ถูกสั่งต้องทำตาม ห้ามฝ่าฝืน!", type: "changer" },
-            { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง", type: "changer" },
-            { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง", type: "changer" },
-            { name: "ข้ามตา", description: "โชคดีไป! ตานี้คุณรอด และคนถัดไปจะอดเล่นด้วย", type: "changer" },
-            { name: "ข้ามตา", description: "โชคดีไป! ตานี้คุณรอด และคนถัดไปจะอดเล่นด้วย", type: "changer" },
-
-            // Activity Cards
-            { name: "Topic ร้อน", description: "ตั้งหัวข้อ 1 อย่าง (เช่น 'ยี่ห้อเบียร์') แล้วไล่ตอบทีละคน ใครตอบซ้ำหรือคิดไม่ออกใน 5 วิ... โดน!", type: "activity" },
-            { name: "Topic ร้อน", description: "ตั้งหัวข้อ 1 อย่าง (เช่น 'ยี่ห้อเบียร์') แล้วไล่ตอบทีละคน ใครตอบซ้ำหรือคิดไม่ออกใน 5 วิ... โดน!", type: "activity" },
-            { name: "Topic ร้อน", description: "ตั้งหัวข้อ 1 อย่าง (เช่น 'ยี่ห้อเบียร์') แล้วไล่ตอบทีละคน ใครตอบซ้ำหรือคิดไม่ออกใน 5 วิ... โดน!", type: "activity" },
-            { name: "Rule กฎต้องสาป", description: "ตั้งกฎขึ้นมาหนึ่งข้อ ใครทำผิดกฎ โดนน ! (กฎจะอยู่จนกว่าไพ่จะหมดสำรับ)", type: "activity" },
-            { name: "Rule กฎต้องสาป", description: "ตั้งกฎขึ้นมาหนึ่งข้อ ใครทำผิดกฎ โดนน ! (กฎจะอยู่จนกว่าไพ่จะหมดสำรับ)", type: "activity" },
-            { name: "เจ้าของห้องน้ำา", description: "ใครจะเข้าห้องน้ำต้องขอเจ้าของห้องน้ำ ! (ถ้ามีคำสั่งต้องทำตามคำสั่งเจ้าของห้องน้ำก่อน)", type: "activity" },
-            { name: "เจ้าของห้องน้ำา", description: "ใครจะเข้าห้องน้ำต้องขอเจ้าของห้องน้ำ ! (ถ้ามีคำสั่งต้องทำตามคำสั่งเจ้าของห้องน้ำก่อน)", type: "activity" },
-            { name: "เจ้าของห้องน้ำา", description: "ใครจะเข้าห้องน้ำต้องขอเจ้าของห้องน้ำ ! (ถ้ามีคำสั่งต้องทำตามคำสั่งเจ้าของห้องน้ำก่อน)", type: "activity" },
-            { name: "นักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !", type: "activity" },
-            { name: "นักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !", type: "activity" },
-            { name: "จับหน้า", description: "เมื่อใครเปิดได้การ์ดใบนี้ จะเป็นเจ้าของการจับหน้า! ถ้าเจ้าของจับหน้า ทุกคนต้องจับตาม ใครจับคนสุดท้ายโดน !", type: "activity" },
-            { name: "จับหน้า", description: "เมื่อใครเปิดได้การ์ดใบนี้ จะเป็นเจ้าของการจับหน้า! ถ้าเจ้าของจับหน้า ทุกคนต้องจับตาม ใครจับคนสุดท้ายโดน !", type: "activity" },
-            { name: "จับหน้า", description: "เมื่อใครเปิดได้การ์ดใบนี้ จะเป็นเจ้าของการจับหน้า! ถ้าเจ้าของจับหน้า ทุกคนต้องจับตาม ใครจับคนสุดท้ายโดน !", type: "activity" },
-            { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "activity" },
-            { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "activity" },
-            { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "activity" },
-            
-            // Duel Cards
-            { name: "ท้าชนน", description: "เลือกคู่ต่อสู้ 1 คน มาเล่น 'โอ-ส้ม' กัน... ใครแพ้โดน!", type: "duel" },
-            { name: "ท้าชนน", description: "เลือกคู่ต่อสู้ 1 คน มาเล่น 'โอ-ส้ม' กัน... ใครแพ้โดน!", type: "duel" },
-            { name: "ท้าชนน", description: "เลือกคู่ต่อสู้ 1 คน มาเล่น 'โอ-ส้ม' กัน... ใครแพ้โดน!", type: "duel" },
-            { name: "ดวลหมดแก้ว", description: "ท้าใครก็ได้ 1 คน มาซดพร้อมกัน... ใครหมดช้ากว่า... โดนไปอีกครึ่ง!", type: "duel" },
-            { name: "ดวลหมดแก้ว", description: "ท้าใครก็ได้ 1 คน มาซดพร้อมกัน... ใครหมดช้ากว่า... โดนไปอีกครึ่ง!", type: "duel" },
-            { name: "มวยปล้ำนิ้ว", description: "เลือกคนที่จะดวลด้วย... คนแพ้โดน 1 กรึ๊บ!", type: "duel" },
-            { name: "มวยปล้ำนิ้ว", description: "เลือกคนที่จะดวลด้วย... คนแพ้โดน 1 กรึ๊บ!", type: "duel" },
-            { name: "จ้องตาหาเรื่อง", description: "ท้าใครก็ได้ 1 คน มาจ้องตา... ใครหลบตาหรือขำก่อน... โดน!", type: "duel" },
-            { name: "จ้องตาหาเรื่อง", description: "ท้าใครก็ได้ 1 คน มาจ้องตา... ใครหลบตาหรือขำก่อน... โดน!", type: "duel" },
-        ];
-
-        let players = [];
-        let deck = [];
-        let currentPlayerIndex = 0;
-
-        const setupScreen = document.getElementById('setup-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const addPlayerBtn = document.getElementById('add-player-btn');
-        const startGameBtn = document.getElementById('start-game-btn');
-        const playerInputsContainer = document.getElementById('player-inputs');
-        const playerListDiv = document.getElementById('player-list');
-        const turnIndicator = document.getElementById('turn-indicator');
-        const cardDisplay = document.getElementById('card-display');
-        const drawCardBtn = document.getElementById('draw-card-btn');
-        const cardTitle = document.getElementById('card-title');
-        const cardDescription = document.getElementById('card-description');
-        const cardFront = document.querySelector('.card-front');
+    // --- ADVANCED CARD DECK ---
+    const allCards = [
+        // Action Cards (Same as before)
+        { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
+ { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
+        { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
+        { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
+        { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
+               { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
+        { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
+        { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
+        { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
+               { name: "กรรมตามสนอง", description: "จั่วได้ก็โดนเองไปเลย 1 กรึ๊บ!", type: "action" },
+        { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
+        { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
+        { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
+        { name: "ดูวโอ้วว", description: "หาเพื่อนอีกหนึ่งคน จัดไปเลยคนละ 1 กรึ๊บ!", type: "action" },
+        { name: "สามัคคีคือพลัง", description: "เพื่อมิตรภาพ! ทุกคนในวงโดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "สหายรัก บัดดี้", description: "บัดดี้โดน เราโดนด้วย", type: "action" },
+        { name: "ขวาตายย", description: "คนนั่งข้างขวาของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายสลบบ", description: "คนนั่งข้างซ้ายของคุณ โดน 1 กรึ๊บ", type: "action" },
+        { name: "ซ้ายขวาสะเทือน", description: "คนนั่งข้างซ้ายและขวาของคุณ โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "พี่ใหญ่น้องเล็ก", description: "คนที่อายุมากที่สุดและน้อยที่สุดในวง โดนคนละ 1 กรึ๊บ", type: "action" },
+        { name: "คนโสดโปรดทราบ", description: "ใครที่ยังโสดในที่นี้... โดน!", type: "action" },
         
-        // **** START: JAVASCRIPT CHANGE ****
-        const nextTurnBtn = document.getElementById('next-turn-btn');
-        // **** END: JAVASCRIPT CHANGE ****
+        // --- UPGRADED CARDS ---
+        { 
+            name: "ชี้ชะตา", 
+            description: "คุณคือยมบาล! จะใจดีหรือใจร้ายดีล่ะ?", 
+            type: "action",
+            special: true,
+            action: 'choice',
+            choices: [
+                { text: 'ยมบาลใจดี', effect: 'เลือกหนึ่งคนให้ดื่ม ก่อนดื่มเป่ายิงฉุบ ถ้า ชนะรอด ถ้าแพ้ดื่ม' },
+                { text: 'ยมบาลใจร้าย', effect: 'เลือก 1 คนโดน 2 (เลือกหนึ่งคน เเล้วให้คนคนนั้นเลือกเพิ่มอีกหนึ่งคน' }
+            ]
+        },
+        { name: "Topic ร้อน: ระเบิดเวลา", description: "ร้องเพลงอะไรก็ได้เล้วหลับตา ให้เพื่อน ๆ ในวงส่งบอลหรืออะไรก็ได้ไปเรื่อย ๆ เพลงหยุด เเล้วบอลอยู่ที่ใคร โดน!", type: "activity" },
+              { name: "Topic ร้อน: ระเบิดเวลา", description: "ร้องเพลงอะไรก็ได้เล้วหลับตา ให้เพื่อน ๆ ในวงส่งบอลหรืออะไรก็ได้ไปเรื่อย ๆ เพลงหยุด เเล้วบอลอยู่ที่ใคร โดน!", type: "activity" },
+        { name: "Topic ร้อน: ทายเพลงง", description: "ให้คนที่เปิดไพ่ใบนี้ร้องเพลงอะไรก็ได้โดยใช้เเค่คำว่า อี ใครตอบถูกคนเเรกรอด ที่เหลือโดน !", type: "activity" },
+        { name: "Topic ร้อน: แย่งนับจำนวน 3 รอบ", description: "พลัดกันนับเลขตามจำนวณผู้เล่น ใครนับคนสุดท้ายโดน ใครนับซ้ำกันโดน! (วิธีเล่นเเย่งกันนับ ตอนนับให้ยืนขึ้น)", type: "activity" },
+        { name: "Topic ร้อน: คำต้องห้าม", description: "ให้ทุกคน คิดคำต้องห้ามของตัวเอง เขียนลงใน โทรศัพท์ จากนั้นสลับกัน (เราจะไม่ได้คำของตัวเอง) จากนั้นเล่นเล่นเกมคำต้องห้ามใน 5 นาที ถ้าไม่มีใครเเพ้เลย ให้ยกทั้งวง ! (กรณีคำซ้ำกัน เจ้าของโทรศัพท์โดนท้ายเกม)", type: "activity" },
+              { name: "Topic ร้อน: ระเบิดเวลา", description: "ร้องเพลงอะไรก็ได้เล้วหลับตา ให้เพื่อน ๆ ในวงส่งบอลหรืออะไรก็ได้ไปเรื่อย ๆ เพลงหยุด เเล้วบอลอยู่ที่ใคร โดน!", type: "activity" },
+        { name: "Topic ร้อน: ทายเพลงง", description: "ให้คนที่เปิดไพ่ใบนี้ร้องเพลงอะไรก็ได้โดยใช้เเค่คำว่า อี ใครตอบถูกคนเเรกรอด ที่เหลือโดน !", type: "activity" },
+        { name: "Topic ร้อน: แย่งนับจำนวน 3 รอบ", description: "พลัดกันนับเลขตามจำนวณผู้เล่น ใครนับคนสุดท้ายโดน ใครนับซ้ำกันโดน! (วิธีเล่นเเย่งกันนับ ตอนนับให้ยืนขึ้น)", type: "activity" },
+        { name: "Topic ร้อน: คำต้องห้าม", description: "ให้ทุกคน คิดคำต้องห้ามของตัวเอง เขียนลงใน โทรศัพท์ จากนั้นสลับกัน (เราจะไม่ได้คำของตัวเอง) จากนั้นเล่นเล่นเกมคำต้องห้ามใน 5 นาที ถ้าไม่มีใครเเพ้เลย ให้ยกทั้งวง ! (กรณีคำซ้ำกัน เจ้าของโทรศัพท์โดนท้ายเกม)", type: "activity" },
+        { name: "Topic ร้อน: ทายเพลงง", description: "ให้คนที่เปิดไพ่ใบนี้ร้องเพลงอะไรก็ได้โดยใช้เเค่คำว่า อี ใครตอบถูกคนเเรกรอด ที่เหลือโดน !", type: "activity" },
+        { name: "Topic ร้อน: แย่งนับจำนวน 3 รอบ", description: "พลัดกันนับเลขตามจำนวณผู้เล่น ใครนับคนสุดท้ายโดน ใครนับซ้ำกันโดน! (วิธีเล่นเเย่งกันนับ ตอนนับให้ยืนขึ้น)", type: "activity" },
+        { name: "Topic ร้อน: คำต้องห้าม", description: "ให้ทุกคน คิดคำต้องห้ามของตัวเอง เขียนลงใน โทรศัพท์ จากนั้นสลับกัน (เราจะไม่ได้คำของตัวเอง) จากนั้นเล่นเล่นเกมคำต้องห้ามใน 5 นาที ถ้าไม่มีใครเเพ้เลย ให้ยกทั้งวง ! (กรณีคำซ้ำกัน เจ้าของโทรศัพท์โดนท้ายเกม)", type: "activity" },
 
-        // --- SETUP LOGIC ---
-        addPlayerBtn.addEventListener('click', () => {
-            if (playerInputsContainer.children.length >= 8) return;
-            const newPlayerInput = document.createElement('div');
-            newPlayerInput.className = 'player-input-group';
-            newPlayerInput.innerHTML = `<input type="text" placeholder="ชื่อผู้เล่น ${playerInputsContainer.children.length + 1}"><button onclick="this.parentElement.remove()">-</button>`;
-            playerInputsContainer.appendChild(newPlayerInput);
+        // Game Changer Cards (Same as before)
+        { name: "ราชา", description: "คุณได้สิทธิ์สั่งอะไรก็ได้ 1 ข้อ ทุกคนต้องทำตาม!", type: "changer", special: true },
+ 	{ name: "ราชา", description: "คุณได้สิทธิ์สั่งอะไรก็ได้ 1 ข้อ ทุกคนต้องทำตาม!", type: "changer", special: true },
+        { name: "จับหน้า", description: "คุณได้สิทธิ์จับหน้าเมื่อไหร่ก็ได้ ใครทำช้าสุด โดน!", type: "changer", special: true },
+        { name: "เจ้าของห้องน้ำ", description: "ใครจะเข้าห้องน้ำต้องขออนุญาตคุณ (สามารถสั่งอะไรก็ได้ก่อนไปเข้าห้องน้ำ)!", type: "changer", special: true },
+        { name: "เนักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !!", type: "changer", special: true },
+        { name: "Rule กฎต้องสาป", description: "ตั้งกฎขึ้นมาหนึ่งข้อ ใครทำผิดกฎ โดนน ! (กฎจะอยู่จนกว่าไพ่จะหมดสำรับ)!", type: "changer", special: true },
+        { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "changer", special: true },
+ 	{ name: "ราชา", description: "คุณได้สิทธิ์สั่งอะไรก็ได้ 1 ข้อ ทุกคนต้องทำตาม!", type: "changer", special: true },
+        { name: "จับหน้า", description: "คุณได้สิทธิ์จับหน้าเมื่อไหร่ก็ได้ ใครทำช้าสุด โดน!", type: "changer", special: true },
+        { name: "เจ้าของห้องน้ำ", description: "ใครจะเข้าห้องน้ำต้องขออนุญาตคุณ (สามารถสั่งอะไรก็ได้ก่อนไปเข้าห้องน้ำ)!", type: "changer", special: true },
+        { name: "เนักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !!", type: "changer", special: true },
+        { name: "Rule กฎต้องสาป", description: "ตั้งกฎขึ้นมาหนึ่งข้อ ใครทำผิดกฎ โดนน ! (กฎจะอยู่จนกว่าไพ่จะหมดสำรับ)!", type: "changer", special: true },
+        { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "changer", special: true },
+        { name: "จับหน้า", description: "คุณได้สิทธิ์จับหน้าเมื่อไหร่ก็ได้ ใครทำช้าสุด โดน!", type: "changer", special: true },
+        { name: "เจ้าของห้องน้ำ", description: "ใครจะเข้าห้องน้ำต้องขออนุญาตคุณ (สามารถสั่งอะไรก็ได้ก่อนไปเข้าห้องน้ำ)!", type: "changer", special: true },
+        { name: "หมาหัวเน่า เพื่อนไม่คบ", description: "ห้ามตอบคนที่จั่วได้ใบนี้ (สามารถสามารถถามเขาได้)!", type: "changer", special: true },
+        { name: "หมาหัวเน่า เพื่อนไม่คบ", description: "ห้ามตอบคนที่จั่วได้ใบนี้ (สามารถสามารถถามเขาได้)!", type: "changer", special: true },
+        { name: "หมาหัวเน่า เพื่อนไม่คบ", description: "ห้ามตอบคนที่จั่วได้ใบนี้ (สามารถสามารถถามเขาได้)!", type: "changer", special: true },
+        { name: "เนักเล่า..นักอาย", description: "เริ่มเล่าเรื่องที่คิดว่าอายที่สุดมาเรื่องนึง ถ้าไม่ยอมเล่า หมดแก้วว !!", type: "changer", special: true },
+        { name: "Rule กฎต้องสาป", description: "ตั้งกฎขึ้นมาหนึ่งข้อ ใครทำผิดกฎ โดนน ! (กฎจะอยู่จนกว่าไพ่จะหมดสำรับ)!", type: "changer", special: true },
+        { name: "Truth or Dare", description: "เลือกใครก็ได้ในวง 1 คน เเล้วให้คนที่ถูกเลือก เล่นจริงหรือกล้า!! ถ้าจริง (Truth): ผู้เล่นจะต้องตอบคำถามของเพื่อนๆ ว่าเรื่องที่ถามนั้น 'จริง' หรือไม่ ถ้าเลือก 'กล้า' (Dare): ผู้เล่นจะต้องทำตามคำสั่งหรือคำท้าที่ได้รับมอบหมาย", type: "changer", special: true },
+
+        // --- NEW: KEEPER CARDS (ติดตัว) ---
+        { name: "ส่งต่อความซวย", description: "เก็บไว้! เมื่อคุณถูกสั่งให้ดื่ม ใช้การ์ดนี้เพื่อโบ้ยให้คนอื่นรับเคราะห์แทน (ใช้ได้ 1 ครั้ง)", type: "keeper", special: true },
+        { name: "ส่งต่อความซวย", description: "เก็บไว้! เมื่อคุณถูกสั่งให้ดื่ม ใช้การ์ดนี้เพื่อโบ้ยให้คนอื่นรับเคราะห์แทน (ใช้ได้ 1 ครั้ง)", type: "keeper", special: true },
+        { name: "ตาทิพย์", description: "เก็บไว้! ใช้ก่อนจั่วการ์ดเพื่อแอบดูใบบนสุด ถ้าไม่ชอบ สั่งให้คนถัดไปจั่วแทนได้เลย", type: "keeper", special: true },
+        { name: "เพื่อนตาย", description: "เก็บไว้! เลือกผู้เล่น 1 คนเป็น 'เพื่อนตาย' ของคุณในรอบนั้น เมื่อคุณโดนดื่ม เขาต้องดื่มด้วยครึ่งหนึ่ง", type: "keeper", special: true },
+        { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง", type: "keeper", special: true },
+        { name: "ส่งต่อความซวย", description: "เก็บไว้! เมื่อคุณถูกสั่งให้ดื่ม ใช้การ์ดนี้เพื่อโบ้ยให้คนอื่นรับเคราะห์แทน (ใช้ได้ 1 ครั้ง)", type: "keeper", special: true },
+        { name: "ตาทิพย์", description: "เก็บไว้! ใช้ก่อนจั่วการ์ดเพื่อแอบดูใบบนสุด ถ้าไม่ชอบ สั่งให้คนถัดไปจั่วแทนได้เลย", type: "keeper", special: true },
+        { name: "เพื่อนตาย", description: "เก็บไว้! เลือกผู้เล่น 1 คนเป็น 'เพื่อนตาย' ของคุณในรอบนั้น เมื่อคุณโดนดื่ม เขาต้องดื่มด้วยครึ่งหนึ่ง", type: "keeper", special: true },
+        { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง", type: "keeper", special: true },
+        { name: "ตาทิพย์", description: "เก็บไว้! ใช้ก่อนจั่วการ์ดเพื่อแอบดูใบบนสุด ถ้าไม่ชอบ สั่งให้คนถัดไปจั่วแทนได้เลย", type: "keeper", special: true },
+        { name: "เพื่อนตาย", description: "เก็บไว้! เลือกผู้เล่น 1 คนเป็น 'เพื่อนตาย' ของคุณในรอบนั้น เมื่อคุณโดนดื่ม เขาต้องดื่มด้วยครึ่งหนึ่ง", type: "keeper", special: true },
+        { name: "โล่ป้องกัน", description: "เก็บการ์ดใบนี้ไว้ ใช้ป้องกันตัวเองจากคำสั่งได้ 1 ครั้ง", type: "keeper", special: true },
+        
+        // --- NEW: CURSE CARDS (คำสาป) ---
+        { name: "คำสาปนกแก้ว", description: "คนที่จั่วได้การ์ดใบนี้ ต้องพูดตามคนก่อนหน้าทุกประโยค เป็นเวลา 3 รอบ ทำไม่ได้...โดน!", type: "curse", special: true, duration: 2 },
+        { name: "คำสาปแขนไดโนเสาร์", description: "คนที่จั่วได้การ์ดใบนี้ ต้องเอาข้อศอกติดลำตัว ห้ามกางแขนออก เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 3 },
+        { name: "คำสาปหน้าหมู", description: "คนที่จั่วได้การ์ดใบนี้ ต้องทำปากจู๋เหมือนหมู เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 2 },
+        { name: "คำสาปนกแก้ว", description: "คนที่จั่วได้การ์ดใบนี้ ต้องพูดตามคนก่อนหน้าทุกประโยค เป็นเวลา 3 รอบ ทำไม่ได้...โดน!", type: "curse", special: true, duration: 2 },
+        { name: "คำสาปแขนไดโนเสาร์", description: "คนที่จั่วได้การ์ดใบนี้ ต้องเอาข้อศอกติดลำตัว ห้ามกางแขนออก เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 3 },
+        { name: "คำสาปหน้าหมู", description: "คนที่จั่วได้การ์ดใบนี้ ต้องทำปากจู๋เหมือนหมู เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 2 },
+        { name: "คำสาปนกแก้ว", description: "คนที่จั่วได้การ์ดใบนี้ ต้องพูดตามคนก่อนหน้าทุกประโยค เป็นเวลา 3 รอบ ทำไม่ได้...โดน!", type: "curse", special: true, duration: 2 },
+        { name: "คำสาปแขนไดโนเสาร์", description: "คนที่จั่วได้การ์ดใบนี้ ต้องเอาข้อศอกติดลำตัว ห้ามกางแขนออก เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 3 },
+        { name: "คำสาปหน้าหมู", description: "คนที่จั่วได้การ์ดใบนี้ ต้องทำปากจู๋เหมือนหมู เป็นเวลา 3 รอบ", type: "curse", special: true, duration: 2 },
+
+    ];
+    // For demo, adding more cards
+    allCards.push(...allCards, ...allCards); // Make deck bigger
+
+    let players = [];
+    let deck = [];
+    let currentPlayerIndex = 0;
+    
+    // --- NEW GAME STATE VARIABLES ---
+    let playerInventories = {}; // { 0: {card}, 1: null, ... }
+    let playerCurses = {}; // { 0: {name, turnsLeft}, ... }
+
+    const setupScreen = document.getElementById('setup-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const addPlayerBtn = document.getElementById('add-player-btn');
+    const startGameBtn = document.getElementById('start-game-btn');
+    const playerInputsContainer = document.getElementById('player-inputs');
+    const playerListDiv = document.getElementById('player-list');
+    const turnIndicator = document.getElementById('turn-indicator');
+    const cardArea = document.getElementById('card-area');
+    const cardDisplay = document.getElementById('card-display');
+    const gameButtons = document.getElementById('game-buttons');
+    const drawCardBtn = document.getElementById('draw-card-btn');
+    const nextTurnBtn = document.getElementById('next-turn-btn');
+    const keepCardBtn = document.getElementById('keep-card-btn');
+    const choiceButtonsContainer = document.getElementById('choice-buttons');
+    const cardTitle = document.getElementById('card-title');
+    const cardDescription = document.getElementById('card-description');
+    const cardFront = document.querySelector('.card-front');
+    const playerInventoryDiv = document.getElementById('player-inventory');
+    const targetModal = document.getElementById('target-modal');
+    const targetPlayersDiv = document.getElementById('target-players');
+
+    // --- SETUP LOGIC ---
+    addPlayerBtn.addEventListener('click', () => {
+        if (playerInputsContainer.children.length >= 8) return;
+        const newPlayerInput = document.createElement('div');
+        newPlayerInput.className = 'player-input-group';
+        newPlayerInput.innerHTML = `<input type="text" placeholder="ชื่อผู้เล่น ${playerInputsContainer.children.length + 1}"><button onclick="this.parentElement.remove()">-</button>`;
+        playerInputsContainer.appendChild(newPlayerInput);
+    });
+
+    startGameBtn.addEventListener('click', () => {
+        players = Array.from(document.querySelectorAll('#player-inputs input'))
+            .map(input => input.value.trim())
+            .filter(name => name);
+        if (players.length < 2) { alert('ต้องมีผู้เล่นอย่างน้อย 2 คนนะ!'); return; }
+        setupScreen.style.display = 'none';
+        gameScreen.style.display = 'flex';
+        initGame();
+    });
+    
+    // --- THEME SWITCHER ---
+    function switchTheme(themeName) { document.body.className = themeName; }
+    
+    // --- GAME INITIALIZATION ---
+    function initGame() {
+        deck = [...allCards];
+        shuffle(deck);
+        currentPlayerIndex = Math.floor(Math.random() * players.length);
+        players.forEach((_, index) => {
+            playerInventories[index] = null;
+            playerCurses[index] = null;
         });
+        updatePlayerList();
+        updateTurnUI();
+    }
+    
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
 
-        startGameBtn.addEventListener('click', () => {
-            players = Array.from(document.querySelectorAll('#player-inputs input'))
-                .map(input => input.value.trim())
-                .filter(name => name);
+    // --- DRAW CARD LOGIC ---
+    drawCardBtn.addEventListener('click', () => {
+        if (deck.length === 0) {
+            alert('การ์ดหมดสำรับ! กำลังสับใหม่...');
+            initGame(); // Reset and reshuffle
+            return;
+        }
+        
+        cardArea.classList.add('drawing');
+        setTimeout(() => cardArea.classList.remove('drawing'), 500);
+        
+        const card = deck.pop();
+        
+        cardDisplay.classList.add('flipped');
 
-            if (players.length < 2) {
-                alert('ต้องมีผู้เล่นอย่างน้อย 2 คนนะ!');
-                return;
+        setTimeout(() => {
+            displayCard(card);
+            handleCardDraw(card);
+        }, 300);
+    });
+
+    function displayCard(card) {
+        cardTitle.textContent = card.name;
+        cardDescription.textContent = card.description;
+        cardFront.className = 'card-face card-front'; // Reset classes
+        cardFront.classList.add(`type-${card.type}`);
+        if (card.special) {
+            cardFront.classList.add('special-card-glow');
+        }
+    }
+
+    function handleCardDraw(card) {
+        drawCardBtn.style.display = 'none';
+
+        if (card.type === 'keeper') {
+            keepCardBtn.style.display = 'inline-block';
+            nextTurnBtn.style.display = 'inline-block'; // Can choose to skip keeping
+            keepCardBtn.onclick = () => keepCard(card);
+        } else if (card.type === 'curse') {
+            showTargetModal(card);
+        } else if (card.action === 'choice') {
+            displayChoices(card.choices);
+        } else {
+            nextTurnBtn.style.display = 'inline-block';
+        }
+    }
+
+    // --- NEW CARD TYPE LOGIC ---
+    function keepCard(card) {
+        if (playerInventories[currentPlayerIndex]) {
+            alert('คุณมีการ์ดติดตัวอยู่แล้ว! ต้องใช้ใบเก่าก่อน');
+            return;
+        }
+        playerInventories[currentPlayerIndex] = card;
+        keepCardBtn.style.display = 'none';
+        updateInventoryUI();
+        alert(`${players[currentPlayerIndex]} ได้รับการ์ด "${card.name}"!`);
+        // No need for next turn here, handled by nextTurnBtn
+    }
+
+    function showTargetModal(card) {
+        targetPlayersDiv.innerHTML = '';
+        players.forEach((name, index) => {
+            if (index !== currentPlayerIndex) {
+                const btn = document.createElement('button');
+                btn.className = 'game-button target-player-btn';
+                btn.textContent = name;
+                btn.onclick = () => applyCurse(card, index);
+                targetPlayersDiv.appendChild(btn);
             }
-
-            setupScreen.style.display = 'none';
-            gameScreen.style.display = 'flex';
-            initGame();
         });
-        
-        // --- GAME LOGIC ---
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+        targetModal.style.display = 'flex';
+    }
+
+    function applyCurse(card, targetIndex) {
+        playerCurses[targetIndex] = { name: card.name, turnsLeft: card.duration };
+        targetModal.style.display = 'none';
+        alert(`${players[targetIndex]} โดนคำสาป "${card.name}"!`);
+        updatePlayerList();
+        nextTurnBtn.style.display = 'inline-block';
+    }
+
+    // --- UPGRADED CARD LOGIC ---
+    function displayChoices(choices) {
+        choiceButtonsContainer.innerHTML = '';
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'game-button choice-btn';
+            btn.textContent = choice.text;
+            btn.onclick = () => {
+                alert(`คุณเลือก "${choice.text}"! (${choice.effect})`);
+                choiceButtonsContainer.innerHTML = '';
+                nextTurnBtn.style.display = 'inline-block';
+            };
+            choiceButtonsContainer.appendChild(btn);
+        });
+    }
+
+    // --- TURN MANAGEMENT ---
+    nextTurnBtn.addEventListener('click', () => {
+        // Decrement curse duration for the player whose turn just ended
+        if (playerCurses[currentPlayerIndex]) {
+            playerCurses[currentPlayerIndex].turnsLeft--;
+            if (playerCurses[currentPlayerIndex].turnsLeft <= 0) {
+                alert(`คำสาป "${playerCurses[currentPlayerIndex].name}" ของ ${players[currentPlayerIndex]} ได้สลายไปแล้ว!`);
+                playerCurses[currentPlayerIndex] = null;
             }
         }
         
-        function initGame() {
-            deck = [...allCards];
-            shuffle(deck);
-            currentPlayerIndex = Math.floor(Math.random() * players.length);
-            updatePlayerList();
-            updateTurnUI();
-        }
-
-        // **** START: JAVASCRIPT LOGIC CHANGE ****
-        drawCardBtn.addEventListener('click', () => {
-            if (deck.length === 0) {
-                alert('การ์ดหมดสำรับ! กำลังสับใหม่...');
-                deck = [...allCards];
-                shuffle(deck);
-            }
-
-            const card = deck.pop();
-            
-            drawCardBtn.style.display = 'none'; // Hide draw button
-            nextTurnBtn.style.display = 'inline-block'; // Show next turn button
-            
-            cardDisplay.classList.add('flipped');
-
-            setTimeout(() => {
-                cardTitle.textContent = card.name;
-                cardDescription.textContent = card.description;
-                cardFront.className = 'card-face card-front'; // Reset classes
-                cardFront.classList.add(`type-${card.type}`);
-            }, 300); // Update content mid-flip
-        });
-
-        nextTurnBtn.addEventListener('click', () => {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-            updateTurnUI();
-            
-            cardDisplay.classList.remove('flipped');
-            
-            nextTurnBtn.style.display = 'none'; // Hide next turn button
-            drawCardBtn.style.display = 'inline-block'; // Show draw button
-        });
-        // **** END: JAVASCRIPT LOGIC CHANGE ****
-
-        function updatePlayerList() {
-            playerListDiv.innerHTML = '';
-            players.forEach((name, index) => {
-                const tag = document.createElement('div');
-                tag.className = 'player-tag';
-                tag.id = `player-tag-${index}`;
-                tag.textContent = name;
-                playerListDiv.appendChild(tag);
-            });
-        }
+        // Move to next player
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         
-        function updateTurnUI() {
-            turnIndicator.textContent = `ตาของ... ${players[currentPlayerIndex]}`;
-            document.querySelectorAll('.player-tag').forEach(tag => tag.classList.remove('active'));
-            document.getElementById(`player-tag-${currentPlayerIndex}`).classList.add('active');
-        }
+        updateTurnUI();
+        resetCardState();
 
+        // Check for curse on the new player
+        if (playerCurses[currentPlayerIndex]) {
+            alert(`${players[currentPlayerIndex]}! คุณยังอยู่ในผลของคำสาป "${playerCurses[currentPlayerIndex].name}"! (เหลือ ${playerCurses[currentPlayerIndex].turnsLeft} ตา)`);
+        }
+    });
+
+    function resetCardState() {
+        cardDisplay.classList.remove('flipped');
+        cardFront.classList.remove('special-card-glow');
+        nextTurnBtn.style.display = 'none';
+        keepCardBtn.style.display = 'none';
+        choiceButtonsContainer.innerHTML = '';
+        drawCardBtn.style.display = 'inline-block';
+    }
+
+    // --- UI UPDATES ---
+    function updatePlayerList() {
+        playerListDiv.innerHTML = '';
+        players.forEach((name, index) => {
+            const tag = document.createElement('div');
+            tag.className = 'player-tag';
+            tag.id = `player-tag-${index}`;
+            
+            let displayName = name;
+            if (playerCurses[index]) {
+                displayName += ` <span class="curse-icon">💀</span>`;
+            }
+            tag.innerHTML = displayName;
+            playerListDiv.appendChild(tag);
+        });
+    }
+    
+    function updateTurnUI() {
+        turnIndicator.textContent = `ตาของ... ${players[currentPlayerIndex]}`;
+        document.querySelectorAll('.player-tag').forEach(tag => tag.classList.remove('active'));
+        document.getElementById(`player-tag-${currentPlayerIndex}`).classList.add('active');
+        updateInventoryUI();
+    }
+
+    function updateInventoryUI() {
+        playerInventoryDiv.innerHTML = '';
+        const inventoryCard = playerInventories[currentPlayerIndex];
+        if (inventoryCard) {
+            playerInventoryDiv.innerHTML = `<h3>การ์ดในมือ:</h3>`;
+            const cardEl = document.createElement('div');
+            cardEl.className = 'inventory-card';
+            cardEl.textContent = inventoryCard.name;
+            cardEl.title = inventoryCard.description;
+            cardEl.onclick = () => {
+                alert(`ใช้การ์ด "${inventoryCard.name}"!`);
+                playerInventories[currentPlayerIndex] = null;
+                updateInventoryUI();
+            };
+            playerInventoryDiv.appendChild(cardEl);
+        }
+    }
     </script>
 </body>
 </html>
